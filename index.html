@@ -1407,34 +1407,11 @@
 
         flowerGroup.add(headGroup);
 
-        // 4. CHISPAS MÁGICAS / POLEN BRILLANTE ALREDEDOR DE LA FLOR
-        const sparklesCount = 18;
-        const sparklesGeo = new THREE.BufferGeometry();
-        const sparklesPos = new Float32Array(sparklesCount * 3);
-        for (let i = 0; i < sparklesCount; i++) {
-          const theta = Math.random() * Math.PI * 2;
-          const rad = 3.0 + Math.random() * 2.8;
-          sparklesPos[i * 3] = rad * Math.cos(theta);
-          sparklesPos[i * 3 + 1] = 2.0 + (Math.random() - 0.5) * 4.5;
-          sparklesPos[i * 3 + 2] = rad * Math.sin(theta) + 0.5;
-        }
-        sparklesGeo.setAttribute('position', new THREE.BufferAttribute(sparklesPos, 3));
-        const sparklesMat = new THREE.PointsMaterial({
-          size: 2.2,
-          color: 0xffd700,
-          transparent: true,
-          opacity: 0.88,
-          blending: THREE.AdditiveBlending
-        });
-        const sparkles = new THREE.Points(sparklesGeo, sparklesMat);
-        flowerGroup.add(sparkles);
-
         flowerGroup.scale.set(scale, scale, scale);
 
         return {
           rootGroup: flowerGroup,
-          headGroup: headGroup,
-          sparkles: sparkles
+          headGroup: headGroup
         };
       }
     }
@@ -1961,7 +1938,7 @@
           const orbitalData = {
             group: flowerGroup,
             headGroup: sunflowerModel.headGroup,
-            sparkles: sunflowerModel.sparkles,
+            // chispas eliminadas para mantener la flor 100% limpia y nítida
             hitMesh: hitSphere,
             labelSprite: labelSprite,
             scaleHeart: heartScales[i % heartScales.length],
@@ -2298,14 +2275,7 @@
           ease: 'back.out(1.6)'
         });
 
-        // Giro acelerado y festivo de las chispas mágicas
-        if (flowerData.sparkles) {
-          gsap.to(flowerData.sparkles.rotation, {
-            y: "+=6.28",
-            duration: 1.6,
-            ease: 'power2.out'
-          });
-        }
+
 
         const timeline = gsap.timeline({
           onComplete: () => {
