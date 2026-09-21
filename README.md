@@ -1,23 +1,24 @@
 # 🌻 Galaxia de Amor y Flores Amarillas • Para Ericka
 
-Una experiencia interactiva y cinematográfica en 3D desarrollada con **Three.js**, **WebGL**, **GSAP** y **Canvas-Confetti**, diseñada como un homenaje romántico donde una espiral cósmica dorada cobija girasoles interactivos, cartas de amor, un corazón latiente en el núcleo y música de fondo.
+Una experiencia interactiva y cinematográfica en 3D desarrollada con **Three.js**, **WebGL**, **GSAP** y **Canvas-Confetti**, diseñada como un homenaje romántico donde una espiral cósmica dorada cobija girasoles botánicos realistas, cartas de amor, un corazón latiente en el núcleo y música de fondo.
 
 ---
 
 ## ✨ Características Principales
 
-1. **🌌 Galaxia Espiral Dorada**:
-   - Más de 12,000 partículas distribuidas en brazos espirales logarítmicos con gradientes de oro pulido (`#FFD700`), amarillo girasol (`#FFC107`), ámbar cálido y blanco estelar.
-   - Rotación cósmica lenta y suave en tiempo real.
+1. **💖 Galaxia Dorada en Forma de Corazón**:
+   - Más de 16,500 partículas estelares distribuidas mediante curvas paramétricas que, al ser observadas desde arriba o en perspectiva elevada, forman un **espectacular corazón cósmico dorado**.
+   - Botón interactivo de **"Vista Corazón"** para orientar la cámara inmediatamente hacia la perspectiva cenital perfecta.
+   - Rotación lenta y armónica en tiempo real.
 
-2. **💛 Núcleo del Corazón Paramétrico Latiente**:
-   - Un corazón tridimensional paramétrico en el centro de la galaxia compuesto por más de 2,800 partículas brillantes.
-   - Simulación de latido cardíaco vital (sístole y diástole con modulación de luz puntual ámbar) mediante funciones senoidales continuas.
+2. **🌻 Girasoles Botánicos Realistas en 3D**:
+   - Modelos tridimensionales con **tallo verde curvado orgánico**, **hojas botánicas con nervaduras**, **sépalos verdes en el cáliz**, y **dos capas concéntricas de pétalos dorados** (24 exteriores y 22 interiores escalonados con degradado cálido).
+   - Centro botánico 3D oscuro y afelpado con filotaxis áurea de Fermat (600 semillas y polen dorado).
+   - Destellos y motes de polen mágico flotando alrededor de cada flor en lugar de halos planos que lavan la imagen.
 
-3. **🌻 Girasoles Procedurales en Órbita**:
-   - Texturas de girasoles hiperrealistas generadas proceduralmente mediante Canvas 2D en alta resolución (sin depender de imágenes externas lentas).
-   - Patrón botánico de filotaxis de Fermat en el centro del disco y múltiples capas de pétalos dorados basados en secuencias de Fibonacci.
-   - 7 girasoles orbitando en trayectorias elípticas inclinadas con halos luminosos (*glow billboards*).
+3. **💛 Núcleo del Corazón Paramétrico Latiente**:
+   - Un corazón tridimensional paramétrico en el centro de la galaxia compuesto por más de 3,000 partículas brillantes.
+   - Simulación de latido cardíaco vital sístole/diástole (`Math.sin`) con luz ámbar pulsante.
 
 4. **💌 Sistema de Cartas de Amor Glassmorphism**:
    - Cada girasol custodia un capítulo romántico con títulos caligráficos ('Dancing Script'), marco fotográfico e inspiradores párrafos poéticos.
@@ -25,15 +26,15 @@ Una experiencia interactiva y cinematográfica en 3D desarrollada con **Three.js
    - Explosión de pétalos amarillos y chispas doradas con **Canvas-Confetti** al desplegar cada carta.
 
 5. **🍃 Lluvia de Pétalos en Primer Plano**:
-   - Más de 60 pétalos en 3D curvados flotando y rotando suavemente con la brisa espacial alrededor de la cámara.
+   - 65 pétalos 3D flotando y rotando suavemente con la brisa espacial alrededor de la cámara.
 
 6. **🎵 Reproductor de Audio Flotante con Doble Motor**:
    - Reproductor minimalista con disco de vinilo giratorio y barras de ondas ecualizadoras animadas en CSS.
    - Doble soporte: pista romántica predeterminada + **Sintetizador Romántico Web Audio API** que genera una progresión ambiental en caso de ausencia de red o bloqueos de CORS.
 
 7. **📱 Controles Intuitivos y Responsivos**:
-   - Navegación orbital completa con límites y amortiguación (*damping*).
-   - Botón de recentrado para volver a la vista general en cualquier momento.
+   - Navegación orbital suave con límites y amortiguación (*damping*).
+   - Botón de vista corazón y botón de recentrado.
    - Compatible con pantallas táctiles móviles y escritorio.
 
 ---
@@ -50,7 +51,7 @@ Una experiencia interactiva y cinematográfica en 3D desarrollada con **Three.js
 
 ## 🚀 Ejecución
 
-Simplemente abre el archivo `index.html` en cualquier navegador moderno o sírvelo con cualquier servidor web:
+Simplemente abre el archivo `index.html` en cualquier navegador moderno o ejecútalo con un servidor local:
 
 ```bash
 # Con Python
