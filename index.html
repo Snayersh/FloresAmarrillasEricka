@@ -786,7 +786,7 @@
   <header class="top-bar">
     <div class="brand-title">
       <h1 id="uiMainTitle">Galaxia de Amor</h1>
-      <span id="uiSubTitle">Ericka & Carlos • Flores Amarillas</span>
+      <span id="uiSubTitle">Ericka & Juan G. • Flores Amarillas</span>
     </div>
 
     <div class="action-controls">
@@ -895,9 +895,9 @@
        ========================================================================== */
     const APP_CONFIG = {
       recipientName: "Ericka",
-      senderName: "Carlos",
+      senderName: "Juan G.",
       mainTitle: "Galaxia de Amor",
-      subTitle: "Ericka & Carlos • Flores Amarillas",
+      subTitle: "Ericka & Juan G. • Flores Amarillas",
 
       // Enlace de música romántica de fondo
       audioUrl: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
@@ -1260,22 +1260,22 @@
         this.centerTexture = centerTexture;
         this.leafTexture = leafTexture;
 
-        // Material del centro de semillas (con iluminación real para profundidad 3D)
+        // Material del centro de semillas (con iluminación real para relieve 3D)
         this.centerMaterial = new THREE.MeshStandardMaterial({
           map: this.centerTexture,
-          roughness: 0.85,
+          roughness: 0.82,
           metalness: 0.05
         });
 
-        // Material de los pétalos con calidez y sutil auto-iluminación para resaltar en el cosmos
+        // Material de los pétalos con calidez, saturación oro y sutil brillo
         this.petalMaterial = new THREE.MeshStandardMaterial({
           map: this.petalTexture,
           transparent: true,
           side: THREE.DoubleSide,
-          roughness: 0.42,
+          roughness: 0.38,
           metalness: 0.12,
           emissive: 0x3d1c00,
-          emissiveIntensity: 0.15,
+          emissiveIntensity: 0.18,
           alphaTest: 0.08
         });
 
@@ -1283,7 +1283,7 @@
           map: this.leafTexture,
           transparent: true,
           side: THREE.DoubleSide,
-          roughness: 0.65,
+          roughness: 0.60,
           metalness: 0.05,
           alphaTest: 0.1
         });
@@ -1302,103 +1302,104 @@
       }
 
       /**
-       * Construye una flor botánica 3D hiperrealista con 3 capas de pétalos Fibonacci
+       * Construye un girasol botánico 3D hiperrealista con pétalos radiantes en abanico
        */
       buildSunflower(scale = 1.0) {
         const flowerGroup = new THREE.Group();
 
         // 1. TALLO BOTÁNICO CURVADO
         const stemCurve = new THREE.CatmullRomCurve3([
-          new THREE.Vector3(0, -6.8, 0),
-          new THREE.Vector3(0.65, -3.6, 0.4),
+          new THREE.Vector3(0, -7.0, 0),
+          new THREE.Vector3(0.7, -3.8, 0.4),
           new THREE.Vector3(0.2, -0.6, 0.2),
-          new THREE.Vector3(0, 1.8, 0.5)
+          new THREE.Vector3(0, 2.0, 0.5)
         ]);
-        const stemGeo = new THREE.TubeGeometry(stemCurve, 20, 0.26, 8, false);
+        const stemGeo = new THREE.TubeGeometry(stemCurve, 20, 0.28, 8, false);
         const stemMesh = new THREE.Mesh(stemGeo, this.stemMaterial);
         flowerGroup.add(stemMesh);
 
-        // 2. HOJAS BOTÁNICAS GRANDES A LOS COSTADOS
-        const leafGeo = new THREE.PlaneGeometry(2.6, 4.4);
+        // 2. HOJAS VERDES AMPLIAS Y REALISTAS
+        const leafGeo = new THREE.PlaneGeometry(2.8, 4.6);
 
         // Hoja derecha
         const leafRight = new THREE.Mesh(leafGeo, this.leafMaterial);
-        leafRight.position.set(1.5, -2.4, 0.8);
+        leafRight.position.set(1.6, -2.4, 0.8);
         leafRight.rotation.set(0.4, 0.5, -0.6);
         flowerGroup.add(leafRight);
 
         // Hoja izquierda
         const leafLeft = new THREE.Mesh(leafGeo, this.leafMaterial);
-        leafLeft.position.set(-1.4, -4.0, 0.2);
+        leafLeft.position.set(-1.5, -4.2, 0.2);
         leafLeft.rotation.set(-0.3, -0.4, 0.7);
         flowerGroup.add(leafLeft);
 
         // 3. CABEZA DEL GIRASOL
         const headGroup = new THREE.Group();
-        headGroup.position.set(0, 1.8, 0.5);
-        // Inclinada 45° hacia arriba/frente para contemplar su rostro radiante
+        headGroup.position.set(0, 2.0, 0.5);
+        // Inclinada 45° hacia arriba y al frente para lucir su rostro en su máxima expresión
         headGroup.rotation.x = -Math.PI / 4.0;
 
-        // A. Cáliz verde posterior (18 sépalos)
-        const sepalCount = 18;
-        const sepalGeo = new THREE.ConeGeometry(0.38, 1.8, 4);
-        sepalGeo.rotateX(Math.PI / 2);
+        // A. Cáliz posterior con sépalos verdes
+        const sepalCount = 20;
+        const sepalGeo = new THREE.ConeGeometry(0.4, 2.0, 4);
+        sepalGeo.translate(0, 1.0, 0); // Base en el origen, apunta hacia afuera en +Y
         for (let i = 0; i < sepalCount; i++) {
           const sepalMesh = new THREE.Mesh(sepalGeo, this.sepalMaterial);
           const angle = (i * Math.PI * 2) / sepalCount;
           sepalMesh.position.set(1.5 * Math.cos(angle), 1.5 * Math.sin(angle), -0.28);
           sepalMesh.rotation.z = angle - Math.PI / 2;
-          sepalMesh.rotation.x = 0.35;
+          sepalMesh.rotateOnAxis(new THREE.Vector3(1, 0, 0), -0.32);
           headGroup.add(sepalMesh);
         }
 
-        // B. Capa 1 de pétalos exteriores: 26 pétalos amplios
-        const petalOuterCount = 26;
-        const petalOuterGeo = new THREE.PlaneGeometry(1.35, 4.8);
-        petalOuterGeo.translate(0, 2.4, 0);
-        petalOuterGeo.rotateX(Math.PI / 2);
+        // B. Capa 1 de pétalos exteriores: 28 pétalos grandes con curvatura en abanico
+        const petalOuterCount = 28;
+        const petalOuterGeo = new THREE.PlaneGeometry(1.42, 5.2);
+        petalOuterGeo.translate(0, 2.6, 0); // Base en (0,0,0), punta en +Y
 
         for (let i = 0; i < petalOuterCount; i++) {
           const petal = new THREE.Mesh(petalOuterGeo, this.petalMaterial);
           const angle = (i * Math.PI * 2) / petalOuterCount;
-          petal.position.set(1.55 * Math.cos(angle), 1.55 * Math.sin(angle), -0.05);
+          petal.position.set(1.6 * Math.cos(angle), 1.6 * Math.sin(angle), -0.06);
           petal.rotation.z = angle - Math.PI / 2;
-          petal.rotation.x = 0.20; // Inclinación suave hacia atrás
+          // Curvar sutilmente hacia atrás
+          const tiltJitter = -0.20 + (Math.random() - 0.5) * 0.04;
+          petal.rotateOnAxis(new THREE.Vector3(1, 0, 0), tiltJitter);
           headGroup.add(petal);
         }
 
-        // C. Capa 2 de pétalos medios: 24 pétalos escalonados
-        const petalMidCount = 24;
-        const petalMidGeo = new THREE.PlaneGeometry(1.22, 4.2);
-        petalMidGeo.translate(0, 2.1, 0);
-        petalMidGeo.rotateX(Math.PI / 2);
+        // C. Capa 2 de pétalos medios: 26 pétalos escalonados
+        const petalMidCount = 26;
+        const petalMidGeo = new THREE.PlaneGeometry(1.32, 4.6);
+        petalMidGeo.translate(0, 2.3, 0);
 
         for (let i = 0; i < petalMidCount; i++) {
           const petal = new THREE.Mesh(petalMidGeo, this.petalMaterial);
           const angle = (i * Math.PI * 2) / petalMidCount + (Math.PI / petalMidCount);
-          petal.position.set(1.35 * Math.cos(angle), 1.35 * Math.sin(angle), 0.06);
+          petal.position.set(1.45 * Math.cos(angle), 1.45 * Math.sin(angle), 0.05);
           petal.rotation.z = angle - Math.PI / 2;
-          petal.rotation.x = 0.05;
+          const tiltJitter = -0.06 + (Math.random() - 0.5) * 0.04;
+          petal.rotateOnAxis(new THREE.Vector3(1, 0, 0), tiltJitter);
           headGroup.add(petal);
         }
 
-        // D. Capa 3 de pétalos interiores: 18 florecillas que abrazan el disco
-        const petalInnerCount = 18;
-        const petalInnerGeo = new THREE.PlaneGeometry(1.05, 3.2);
-        petalInnerGeo.translate(0, 1.6, 0);
-        petalInnerGeo.rotateX(Math.PI / 2);
+        // D. Capa 3 de pétalos interiores: 22 florecillas que abrazan el disco de semillas
+        const petalInnerCount = 22;
+        const petalInnerGeo = new THREE.PlaneGeometry(1.15, 3.5);
+        petalInnerGeo.translate(0, 1.75, 0);
 
         for (let i = 0; i < petalInnerCount; i++) {
           const petal = new THREE.Mesh(petalInnerGeo, this.petalMaterial);
           const angle = (i * Math.PI * 2) / petalInnerCount + (Math.PI / (petalInnerCount * 2));
-          petal.position.set(1.15 * Math.cos(angle), 1.15 * Math.sin(angle), 0.14);
+          petal.position.set(1.25 * Math.cos(angle), 1.25 * Math.sin(angle), 0.16);
           petal.rotation.z = angle - Math.PI / 2;
-          petal.rotation.x = -0.12; // Inclinación hacia adelante sobre el disco
+          const tiltJitter = 0.10 + (Math.random() - 0.5) * 0.04; // Cupping hacia adentro
+          petal.rotateOnAxis(new THREE.Vector3(1, 0, 0), tiltJitter);
           headGroup.add(petal);
         }
 
-        // E. Disco de semillas central en 3D
-        const discGeo = new THREE.CylinderGeometry(1.55, 1.45, 0.40, 32);
+        // E. Disco de semillas central abombado en 3D
+        const discGeo = new THREE.CylinderGeometry(1.65, 1.55, 0.42, 36);
         discGeo.rotateX(Math.PI / 2);
         const discMesh = new THREE.Mesh(discGeo, this.centerMaterial);
         discMesh.position.set(0, 0, 0.22);
@@ -1406,23 +1407,23 @@
 
         flowerGroup.add(headGroup);
 
-        // 4. CHISPAS MÁGICAS / POLEN BRILLANTE
-        const sparklesCount = 16;
+        // 4. CHISPAS MÁGICAS / POLEN BRILLANTE ALREDEDOR DE LA FLOR
+        const sparklesCount = 18;
         const sparklesGeo = new THREE.BufferGeometry();
         const sparklesPos = new Float32Array(sparklesCount * 3);
         for (let i = 0; i < sparklesCount; i++) {
           const theta = Math.random() * Math.PI * 2;
-          const rad = 2.8 + Math.random() * 2.5;
+          const rad = 3.0 + Math.random() * 2.8;
           sparklesPos[i * 3] = rad * Math.cos(theta);
-          sparklesPos[i * 3 + 1] = 1.8 + (Math.random() - 0.5) * 4.0;
+          sparklesPos[i * 3 + 1] = 2.0 + (Math.random() - 0.5) * 4.5;
           sparklesPos[i * 3 + 2] = rad * Math.sin(theta) + 0.5;
         }
         sparklesGeo.setAttribute('position', new THREE.BufferAttribute(sparklesPos, 3));
         const sparklesMat = new THREE.PointsMaterial({
-          size: 2.0,
+          size: 2.2,
           color: 0xffd700,
           transparent: true,
-          opacity: 0.85,
+          opacity: 0.88,
           blending: THREE.AdditiveBlending
         });
         const sparkles = new THREE.Points(sparklesGeo, sparklesMat);
