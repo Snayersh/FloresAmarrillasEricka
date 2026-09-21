@@ -1580,7 +1580,6 @@
         this.sunflowerObjects = [];
         this.petalsArray = [];
         this.floatingTextSprites = [];
-        this.miniSunflowers = [];
         this.cosmicStreamPetals = [];
         this.nebulaAuraGroup = null;
 
@@ -1619,7 +1618,6 @@
         this.buildFloatingPhrases();
         this.buildForegroundPetalRain();
         this.buildCosmicNebulaAura();
-        this.buildOuterMiniSunflowers();
         this.buildCosmicPetalStreams();
         this.setupEventListeners();
         this.animate();
@@ -1941,6 +1939,11 @@
           flowerGroup.add(labelSprite);
 
           const initialAngle = heartAngles[i % heartAngles.length];
+          const initS = heartScales[i % heartScales.length];
+          const initHx = 16 * Math.pow(Math.sin(initialAngle), 3) * initS;
+          const initHz = -(13 * Math.cos(initialAngle) - 5 * Math.cos(2 * initialAngle) - 2 * Math.cos(3 * initialAngle) - Math.cos(4 * initialAngle)) * initS;
+          flowerGroup.position.set(initHx, heightOffsets[i % heightOffsets.length], initHz);
+
           const orbitalData = {
             group: flowerGroup,
             headGroup: sunflowerModel.headGroup,
@@ -2104,39 +2107,6 @@
       }
 
       /**
-       * 2. CORONA EXTERIOR DE MINI GIRASOLES CELESTIALES:
-       * 24 pequeños girasoles floreciendo y orbitando suavemente en la periferia exterior
-       */
-      buildOuterMiniSunflowers() {
-        const miniCount = 26;
-        const baseRadiusScales = [4.1, 4.4, 4.8, 5.2, 4.6, 5.0, 4.3];
-
-        for (let i = 0; i < miniCount; i++) {
-          // Girasol mini a escala ~0.42x
-          const miniModel = this.flowerBuilder.buildSunflower(0.42 + Math.random() * 0.12);
-          const miniGroup = miniModel.rootGroup;
-
-          const angle = (i * Math.PI * 2) / miniCount + (Math.random() - 0.5) * 0.2;
-          const scale = baseRadiusScales[i % baseRadiusScales.length];
-          const speed = (0.04 + (i % 3) * 0.015) * (i % 2 === 0 ? 1 : -1);
-          const heightOffset = (Math.random() - 0.5) * 14;
-
-          this.miniSunflowers.push({
-            group: miniGroup,
-            headGroup: miniModel.headGroup,
-            angle: angle,
-            scaleHeart: scale,
-            speed: speed,
-            heightOffset: heightOffset,
-            bobSpeed: 1.0 + Math.random() * 1.5,
-            phase: Math.random() * Math.PI * 2
-          });
-
-          this.scene.add(miniGroup);
-        }
-      }
-
-      /**
        * 3. RÍO CÓSMICO DE PÉTALOS DORADOS GIRATORIOS:
        * 160 pétalos en espirales orbitales que fluyen como un manto de luz enmarcando el corazón
        */
@@ -2173,6 +2143,12 @@
 
           const scale = 0.5 + Math.random() * 0.5;
           mesh.scale.set(scale, scale, scale);
+
+          // Posición inicial inmediata en el halo exterior en forma de corazón (escala 3.5 a 5.8)
+          const hx = 16 * Math.pow(Math.sin(t), 3) * s;
+          const hz = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s;
+          const y = (Math.random() - 0.5) * 16;
+          mesh.position.set(hx, y, hz);
 
           this.cosmicStreamPetals.push({
             mesh: mesh,
@@ -2653,6 +2629,23 @@
 
           // Orientación hacia la cámara para máxima belleza visual
           obj.group.lookAt(this.camera.position.x, obj.group.position.y, this.camera.position.z);
+        });
+
+        // Actualizar río cósmico de pétalos dorados en halo exterior
+        this.cosmicStreamPetals.forEach(p => {
+          p.t += p.speed * dt;
+          const t = p.t;
+          const s = p.scaleHeart;
+
+          const hx = 16 * Math.pow(Math.sin(t), 3) * s;
+          const hz = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * s;
+          const y = p.heightOffset + Math.sin(time * p.wobbleSpeed + p.phase) * 1.5;
+
+          p.mesh.position.set(hx, y, hz);
+
+          p.mesh.rotation.x += p.rotSpeedX;
+          p.mesh.rotation.y += p.rotSpeedY;
+          p.mesh.rotation.z += p.rotSpeedZ;
         });
 
         // Frases poéticas flotantes
