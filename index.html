@@ -1580,6 +1580,9 @@
         this.sunflowerObjects = [];
         this.petalsArray = [];
         this.floatingTextSprites = [];
+        this.miniSunflowers = [];
+        this.cosmicStreamPetals = [];
+        this.nebulaAuraGroup = null;
 
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2(-999, -999);
@@ -1615,6 +1618,9 @@
         this.buildOrbitingBotanicalSunflowers();
         this.buildFloatingPhrases();
         this.buildForegroundPetalRain();
+        this.buildCosmicNebulaAura();
+        this.buildOuterMiniSunflowers();
+        this.buildCosmicPetalStreams();
         this.setupEventListeners();
         this.animate();
       }
@@ -2058,6 +2064,133 @@
          SISTEMA TÁCTIL Y DE RATÓN MULTIPLATAFORMA
          Soluciona el problema de clics en teléfonos móviles mediante tracking de toques.
          ======================================================================== */
+            /**
+       * 1. NEBULOSA CÓSMICA DE FONDO:
+       * Nubes de luz suave en tonos ámbar, violeta cósmico y oro para eliminar el vacío oscuro
+       */
+      buildCosmicNebulaAura() {
+        this.nebulaAuraGroup = new THREE.Group();
+        const nebulaColors = [
+          0x2a1447, // Violeta cósmico profundo
+          0xff8f00, // Ámbar dorado cálido
+          0x1b0a33, // Púrpura noche
+          0xffb300, // Oro radiante
+          0x3e1f58  // Amatista suave
+        ];
+
+        const count = 12;
+        for (let i = 0; i < count; i++) {
+          const mat = new THREE.SpriteMaterial({
+            map: this.glowTexture,
+            color: nebulaColors[i % nebulaColors.length],
+            transparent: true,
+            opacity: 0.16,
+            blending: THREE.AdditiveBlending
+          });
+
+          const sprite = new THREE.Sprite(mat);
+          const angle = (i * Math.PI * 2) / count + (Math.random() - 0.5) * 0.4;
+          const radius = 60 + (i % 3) * 22;
+          const y = (Math.random() - 0.5) * 25;
+
+          sprite.position.set(radius * Math.cos(angle), y, radius * Math.sin(angle));
+          const scale = 55 + Math.random() * 45;
+          sprite.scale.set(scale, scale, 1);
+
+          this.nebulaAuraGroup.add(sprite);
+        }
+
+        this.scene.add(this.nebulaAuraGroup);
+      }
+
+      /**
+       * 2. CORONA EXTERIOR DE MINI GIRASOLES CELESTIALES:
+       * 24 pequeños girasoles floreciendo y orbitando suavemente en la periferia exterior
+       */
+      buildOuterMiniSunflowers() {
+        const miniCount = 26;
+        const baseRadiusScales = [4.1, 4.4, 4.8, 5.2, 4.6, 5.0, 4.3];
+
+        for (let i = 0; i < miniCount; i++) {
+          // Girasol mini a escala ~0.42x
+          const miniModel = this.flowerBuilder.buildSunflower(0.42 + Math.random() * 0.12);
+          const miniGroup = miniModel.rootGroup;
+
+          const angle = (i * Math.PI * 2) / miniCount + (Math.random() - 0.5) * 0.2;
+          const scale = baseRadiusScales[i % baseRadiusScales.length];
+          const speed = (0.04 + (i % 3) * 0.015) * (i % 2 === 0 ? 1 : -1);
+          const heightOffset = (Math.random() - 0.5) * 14;
+
+          this.miniSunflowers.push({
+            group: miniGroup,
+            headGroup: miniModel.headGroup,
+            angle: angle,
+            scaleHeart: scale,
+            speed: speed,
+            heightOffset: heightOffset,
+            bobSpeed: 1.0 + Math.random() * 1.5,
+            phase: Math.random() * Math.PI * 2
+          });
+
+          this.scene.add(miniGroup);
+        }
+      }
+
+      /**
+       * 3. RÍO CÓSMICO DE PÉTALOS DORADOS GIRATORIOS:
+       * 160 pétalos en espirales orbitales que fluyen como un manto de luz enmarcando el corazón
+       */
+      buildCosmicPetalStreams() {
+        const streamCount = 180;
+        const geometry = new THREE.PlaneGeometry(1.5, 3.0, 2, 2);
+
+        const posAttr = geometry.attributes.position;
+        for (let i = 0; i < posAttr.count; i++) {
+          const x = posAttr.getX(i);
+          posAttr.setZ(i, (1 - (x * x) / 1.0) * 0.25);
+        }
+        geometry.computeVertexNormals();
+
+        const material = new THREE.MeshStandardMaterial({
+          map: this.petalTexture,
+          transparent: true,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+          roughness: 0.45,
+          metalness: 0.15,
+          emissive: 0x3e1e00,
+          emissiveIntensity: 0.2,
+          opacity: 0.88
+        });
+
+        for (let i = 0; i < streamCount; i++) {
+          const mesh = new THREE.Mesh(geometry, material);
+
+          // Dispersión en espiral amplia desde escala 3.1 hasta 6.0
+          const s = 3.2 + Math.pow(Math.random(), 0.9) * 2.8;
+          const t = Math.random() * Math.PI * 2;
+          const speed = (0.03 + (s / 6.0) * 0.05) * (i % 2 === 0 ? 1 : -1);
+
+          const scale = 0.5 + Math.random() * 0.5;
+          mesh.scale.set(scale, scale, scale);
+
+          this.cosmicStreamPetals.push({
+            mesh: mesh,
+            t: t,
+            scaleHeart: s,
+            speed: speed,
+            heightOffset: (Math.random() - 0.5) * 16,
+            rotSpeedX: (Math.random() - 0.5) * 0.03,
+            rotSpeedY: (Math.random() - 0.5) * 0.04,
+            rotSpeedZ: (Math.random() - 0.5) * 0.03,
+            wobbleSpeed: 1.2 + Math.random() * 1.5,
+            phase: Math.random() * Math.PI * 2
+          });
+
+          this.scene.add(mesh);
+        }
+      }
+
       setupEventListeners() {
         window.addEventListener('resize', () => this.onWindowResize());
 
