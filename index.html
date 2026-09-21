@@ -900,7 +900,7 @@
       subTitle: "Ericka & Juan G. • Flores Amarillas",
 
       // Enlace de música romántica de fondo
-      audioUrl: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3",
+      audioUrl: "cancion.mp3",
 
       // Frases poéticas tridimensionales que flotan por la galaxia
       floatingPhrases: [
@@ -1449,7 +1449,7 @@
         this.audioElement = new Audio();
         this.audioElement.src = audioUrl;
         this.audioElement.loop = true;
-        this.audioElement.crossOrigin = "anonymous";
+        if (audioUrl.startsWith("http")) { this.audioElement.crossOrigin = "anonymous"; }
         this.audioElement.volume = 0.75;
 
         this.synthActive = false;
