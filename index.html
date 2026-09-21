@@ -1608,6 +1608,7 @@
         this.mouse = new THREE.Vector2(-999, -999);
         this.hoveredSunflower = null;
         this.isCinematicFlightActive = false;
+        this.focusedFlower = null;
 
         // Texturas
         this.glowTexture = TextureGenerator.createGlowParticleTexture();
@@ -1912,7 +1913,7 @@
           Math.PI * 0.98   // Punta inferior del corazón
         ];
 
-        const heartScales = [2.2, 2.4, 1.8, 1.8, 2.4, 2.2, 2.5];
+        const heartScales = [3.35, 3.45, 3.25, 3.25, 3.45, 3.35, 3.50];
         const orbitalSpeeds = [0.08, -0.07, 0.09, -0.08, 0.07, -0.09, 0.06];
         const heightOffsets = [2, -2, 3, -1, 2, -3, 1];
 
@@ -1987,7 +1988,7 @@
           Math.PI * 0.95,
           -Math.PI * 0.05
         ];
-        const phraseScales = [2.6, 2.8, 2.4, 2.7, 2.5, 2.8, 2.6, 2.3];
+        const phraseScales = [3.85, 4.05, 3.75, 3.95, 4.05, 3.85, 4.15, 3.75];
 
         for (let i = 0; i < phrases.length; i++) {
           const phrase = phrases[i];
@@ -2259,15 +2260,52 @@
       /**
        * Vuelo cinemático hacia el girasol seleccionado
        */
+      /**
+       * Vuelo cinemático de alta gama hacia el girasol:
+       * 1. Bloquea la posición orbital para evitar desincronización
+       * 2. Anima el florecimiento y agrandamiento del girasol (1.6x)
+       * 3. Acelera el giro del polen y chispas doradas
+       * 4. Suaviza la galaxia de fondo para crear profundidad de campo cinematográfica
+       * 5. Cámara en curva fluida con desaceleración dramática hacia el rostro de la flor
+       */
       performCinematicFlightToFlower(flowerData) {
         this.isCinematicFlightActive = true;
         this.controls.enabled = false;
+        this.focusedFlower = flowerData;
 
+        // Posición mundial fija del girasol seleccionado
         const targetWorldPos = new THREE.Vector3();
         flowerData.group.getWorldPosition(targetWorldPos);
+        const flowerHeadPos = new THREE.Vector3(targetWorldPos.x, targetWorldPos.y + 2.0, targetWorldPos.z);
 
-        const offsetDir = targetWorldPos.clone().normalize();
-        const cameraTargetPosition = targetWorldPos.clone().add(offsetDir.multiplyScalar(15)).add(new THREE.Vector3(0, 4, 0));
+        // Vector de aproximación oblicuo y cinematográfico frente a la flor
+        const camDir = targetWorldPos.clone().normalize();
+        const cameraTargetPosition = targetWorldPos.clone()
+          .add(camDir.multiplyScalar(13))
+          .add(new THREE.Vector3(0, 4.0, 0));
+
+        // Atenuar suavemente las partículas de la galaxia para destacar la flor
+        if (this.galaxyPoints) {
+          gsap.to(this.galaxyPoints.material, { opacity: 0.35, duration: 1.2 });
+        }
+
+        // Efecto de florecimiento dramático del girasol
+        gsap.to(flowerData.group.scale, {
+          x: 1.65,
+          y: 1.65,
+          z: 1.65,
+          duration: 1.4,
+          ease: 'back.out(1.6)'
+        });
+
+        // Giro acelerado y festivo de las chispas mágicas
+        if (flowerData.sparkles) {
+          gsap.to(flowerData.sparkles.rotation, {
+            y: "+=6.28",
+            duration: 1.6,
+            ease: 'power2.out'
+          });
+        }
 
         const timeline = gsap.timeline({
           onComplete: () => {
@@ -2275,20 +2313,21 @@
           }
         });
 
+        // Movimiento curvo y suave de la cámara
         timeline.to(this.camera.position, {
           x: cameraTargetPosition.x,
           y: cameraTargetPosition.y,
           z: cameraTargetPosition.z,
-          duration: 1.6,
-          ease: 'power2.inOut'
+          duration: 1.55,
+          ease: 'power3.inOut'
         }, 0);
 
         timeline.to(this.controls.target, {
-          x: targetWorldPos.x,
-          y: targetWorldPos.y + 1.8,
-          z: targetWorldPos.z,
-          duration: 1.6,
-          ease: 'power2.inOut'
+          x: flowerHeadPos.x,
+          y: flowerHeadPos.y,
+          z: flowerHeadPos.z,
+          duration: 1.55,
+          ease: 'power3.inOut'
         }, 0);
       }
 
@@ -2367,10 +2406,26 @@
           container.classList.remove('active');
         }, 300);
 
+        // Restaurar la escala del girasol y la opacidad de la galaxia
+        if (this.focusedFlower) {
+          gsap.to(this.focusedFlower.group.scale, {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+            duration: 1.2,
+            ease: 'power2.out'
+          });
+        }
+
+        if (this.galaxyPoints) {
+          gsap.to(this.galaxyPoints.material, { opacity: 0.88, duration: 1.4 });
+        }
+
         const timeline = gsap.timeline({
           onComplete: () => {
             this.controls.enabled = true;
             this.isCinematicFlightActive = false;
+            this.focusedFlower = null; // Reanuda la órbita de forma fluida
           }
         });
 
@@ -2378,16 +2433,16 @@
           x: this.initialCameraPos.x,
           y: this.initialCameraPos.y,
           z: this.initialCameraPos.z,
-          duration: 1.5,
-          ease: 'power2.inOut'
+          duration: 1.6,
+          ease: 'power3.inOut'
         }, 0);
 
         timeline.to(this.controls.target, {
           x: this.initialTargetPos.x,
           y: this.initialTargetPos.y,
           z: this.initialTargetPos.z,
-          duration: 1.5,
-          ease: 'power2.inOut'
+          duration: 1.6,
+          ease: 'power3.inOut'
         }, 0);
       }
 
@@ -2476,7 +2531,9 @@
 
         // Órbitas de los girasoles siguiendo el contorno del corazón cósmico
         this.sunflowerObjects.forEach(obj => {
-          obj.currentAngle += obj.speed * dt;
+          if (this.focusedFlower !== obj) {
+            obj.currentAngle += obj.speed * dt;
+          }
 
           const t = obj.currentAngle;
           const s = obj.scaleHeart;
